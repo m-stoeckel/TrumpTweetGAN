@@ -1,9 +1,6 @@
 import re
 from urllib import request
 import os
-from zipfile import ZipFile
-from typing import *
-import shutil
 
 import numpy as np
 from torch.utils.data.dataset import Dataset
@@ -18,33 +15,29 @@ url_regex = re.compile(
 )
 clean_regex = re.compile(r'[^\w\-_!?:.,;()\d\'"\s#@]')
 
-# TODO: Make IterableDataset?
+# File example (url): http://trumptwitterarchive.com/data/realdonaldtrump/2019.json
+
+# TODO: Make Iterable Over Persons (other than trump)?
 class TrumpTweetDataset(Dataset):
     def __init__(self, save_dir=None, download=True):
         super(TrumpTweetDataset, self).__init__()
-        file_list: List[str] = [  # 'condensed_2009.json.zip', 'condensed_2010.json.zip', 'condensed_2011.json.zip',
-            # 'condensed_2012.json.zip', 'condensed_2013.json.zip', 'condensed_2014.json.zip',
-            # 'condensed_2015.json.zip',
-            'condensed_2016.json.zip', 'condensed_2017.json.zip', 'condensed_2018.json.zip']
+        file_list = []
+
+        for year in range(2015, 2019):
+            file_list.append(str(year) + ".json")
+
         if save_dir is None:
             save_dir = os.path.join(os.getcwd(), 'corpus')
 
         if download:
-            tempdir = tempfile.mkdtemp('TrumpGAN')
-            url_root = 'https://github.com/bpb27/trump_tweet_data_archive/raw/master/'
+            url_root = 'http://trumptwitterarchive.com/data/realdonaldtrump/'
 
-            for file_name in file_list:
-                print(f'Downloading {file_name} to {save_dir}..')
-                file_path = os.path.join(tempdir, file_name)
-                request.urlretrieve(url_root + file_name, file_path)
-                with ZipFile(file_path, 'r') as zip:
-                    zip.extractall(save_dir)
-
-            # cleanup
-            shutil.rmtree(tempdir)
+            for file in file_list:
+                print(f'Downloading {file} to {save_dir}..')
+                file_path = os.path.join(save_dir, file)
+                request.urlretrieve(url_root + file, file_path)
 
         # join tweets from all selected years in a single list
-        file_list = list(map(lambda s: s.replace('.zip', ''), file_list))
         self.tweets = []
         for file in file_list:
             with open(os.path.join(save_dir, file), 'r', encoding='utf-8') as fp:
@@ -81,5 +74,5 @@ class TrumpTweetDataset(Dataset):
         return len(self.tweets)
 
 
-data = TrumpTweetDataset(download=False)
+data = TrumpTweetDataset(download=True)
 print(data[0])
