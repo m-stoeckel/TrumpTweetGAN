@@ -38,7 +38,6 @@ class TrumpTweetDataset(Dataset):
                 request.urlretrieve(url_root + file, file_path)
 
         # join tweets from all selected years in a single list
-        file_list = list(map(lambda s: s.replace('.zip', ''), file_list))
         self.tweets = []
         for file in file_list:
             with open(os.path.join(save_dir, file), 'r', encoding='utf-8') as fp:
