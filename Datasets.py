@@ -16,17 +16,20 @@ url_regex = re.compile(
 )
 clean_regex = re.compile(r'[^\w\-_!?:.,;()\d\'"\s#@]')
 
-REPLACE_HASHTAGS = True
-REPLACE_URLS = True
-REPLACE_HANDLES = False
-
 
 # File example (url): http://trumptwitterarchive.com/data/realdonaldtrump/2019.json
 
 # TODO: Make Iterable Over Persons (other than trump)?
 class TrumpTweetDataset(Dataset):
-    def __init__(self, save_dir=None, download=True, years=range(2009, 2020)):
+    def __init__(self, save_dir=None, download=True, years=range(2009, 2020), remove_retweets=True,
+                 remove_replies=True, remove_chaintweets=True, mask_handles=True,
+                 mask_hashtags=True, mask_urls=True):
         super(TrumpTweetDataset, self).__init__()
+
+        self.mask_handles = mask_handles
+        self.mask_hashtags = mask_hashtags
+        self.mask_urls = mask_urls
+
         file_list = []
 
         for year in years:
@@ -54,14 +57,19 @@ class TrumpTweetDataset(Dataset):
         print(f'loaded {len(self.tweets)} raw tweets')
 
         # remove re-tweets
-        self.tweets = list(
-            filter(lambda tw: not tw.get('is_retweet', True),
-                   self.tweets))
-
+        if remove_retweets:
+            self.tweets = list(
+                filter(lambda tw: not tw.get('is_retweet', True),
+                       self.tweets))
+        if remove_replies:
+            self.tweets = list(
+                filter(lambda tw: not tw.get('in_reply_to_user_id_str', None),
+                       self.tweets))
         # remove chain tweets
-        self.tweets = list(
-            filter(lambda tw: not (tw.get('text', "").endswith("..") or tw.get('text', "").startswith("..")),
-                   self.tweets))
+        if remove_chaintweets:
+            self.tweets = list(
+                filter(lambda tw: not (tw.get('text', "").endswith("..") or tw.get('text', "").startswith("..")),
+                       self.tweets))
         print(f'loaded {len(self.tweets)} clean tweets')
 
     def __getitem__(self, item):
@@ -81,15 +89,15 @@ class TrumpTweetDataset(Dataset):
         text = clean_regex.sub('', text)
 
         # replace @-handles with masks
-        if REPLACE_HANDLES:
+        if self.mask_handles:
             text = handle_regex.sub(' [HANDLE] ', text)
 
         # replace hashtags with masks
-        if REPLACE_HASHTAGS:
+        if self.mask_hashtags:
             text = hashtag_regex.sub(' [HASHTAG] ', text)
 
         # replace links
-        if REPLACE_URLS:
+        if self.mask_urls:
             text = url_regex.sub(' [URL] ', text)
 
         text = self.tokenize(text)
@@ -101,7 +109,7 @@ class TrumpTweetDataset(Dataset):
 
     @staticmethod
     def tokenize(text):
-        return " ".join(re.split(r'([^\]\[\w@#\-]+)', text))
+        return " ".join(re.split(r'([^\]\[\w@#\-]+|[\-]{2,})', text))
 
     def __len__(self):
         return len(self.tweets)
@@ -128,5 +136,5 @@ for year in (2009, 2015, 2016):
             test.write(entry + "\n")
             # vocabulary |= set(entry.strip().split())
         print('', flush=True, end='')
-        print(f'{year}-2019 vocabulary size: {len(vocabulary)}')
-        print(f'{year}-2019 vocabulary: {list(vocabulary)[:100]}')
+        print(f'{year}-2019 train vocabulary size: {len(vocabulary)}', flush=True)
+        print(f'{year}-2019 train vocabulary[:100]: {list(vocabulary)[:100]}', flush=True)
