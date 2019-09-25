@@ -1,3 +1,4 @@
+import html
 import json
 import os
 import re
@@ -7,13 +8,17 @@ import numpy as np
 from torch.utils.data.dataset import Dataset
 from tqdm import trange
 
-at_regex = re.compile(r'(@\w{1,15})')
-hash_regex = re.compile(r'(#[\w_\d]+)')
+handle_regex = re.compile(r'(@\w{1,15})')
+hashtag_regex = re.compile(r'(#[\w_\d]+)')
 url_regex = re.compile(
     # r'((?:(?:https?|ftp)://)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\x{00a1}-\x{ffff}0-9]+-?)*[a-z\x{00a1}-\x{ffff}0-9]+)(?:\.(?:[a-z\x{00a1}-\x{ffff}0-9]+-?)*[a-z\x{00a1}-\x{ffff}0-9]+)*(?:\.(?:[a-z\x{00a1}-\x{ffff}]{2,})))(?::\d{2,5})?(?:/[^\s]*)?)'
     r'((?:http[s]?|www)\S+)'
 )
 clean_regex = re.compile(r'[^\w\-_!?:.,;()\d\'"\s#@]')
+
+REPLACE_HASHTAGS = True
+REPLACE_URLS = True
+REPLACE_HANDLES = False
 
 
 # File example (url): http://trumptwitterarchive.com/data/realdonaldtrump/2019.json
@@ -63,6 +68,12 @@ class TrumpTweetDataset(Dataset):
         tweet: dict = self.tweets[item]
         text: str = tweet.get('text', "")
 
+        # unescape HTML content
+        text = html.unescape(text)
+
+        # strip leading and trailing quotes
+        text = text.strip().lstrip("\"'").rstrip("\"'")
+
         # replace spaces
         text = re.sub(r'\s+', ' ', text)
 
@@ -70,15 +81,27 @@ class TrumpTweetDataset(Dataset):
         text = clean_regex.sub('', text)
 
         # replace @-handles with masks
-        if False:  # TODO: parametrize replacers
-            text = at_regex.sub('[TW-AT]', text)
+        if REPLACE_HANDLES:
+            text = handle_regex.sub(' [HANDLE] ', text)
 
-        # TODO: Create hash regex replacer
+        # replace hashtags with masks
+        if REPLACE_HASHTAGS:
+            text = hashtag_regex.sub(' [HASHTAG] ', text)
 
         # replace links
-        text = url_regex.sub('[URL]', text)
+        if REPLACE_URLS:
+            text = url_regex.sub(' [URL] ', text)
+
+        text = self.tokenize(text)
+
+        # replace spaces again
+        text = re.sub(r'\s+', ' ', text)
 
         return text
+
+    @staticmethod
+    def tokenize(text):
+        return " ".join(re.split(r'([^\]\[\w@#\-]+)', text))
 
     def __len__(self):
         return len(self.tweets)
@@ -89,16 +112,21 @@ class TrumpTweetDataset(Dataset):
 
 for year in (2009, 2015, 2016):
     data = TrumpTweetDataset(download=True, years=range(year, 2020))
+    np.random.seed(2020)
     data.shuffle()
     prefix = f'trump_tweets_{year}-2019'
-    with open(prefix + '.train', 'w', encoding='utf-8') as train, \
-            open(prefix + '.dev', 'w', encoding='utf-8') as dev, \
-            open(prefix + '.test', 'w', encoding='utf-8') as test:
-        train_sample = int(len(data) * 0.8)
-        dev_sample = int(len(data) * 0.9)
+    with open('dataset/' + prefix + '.txt', 'w', encoding='utf-8') as train, \
+            open('dataset/testdata/' + prefix + '_test.txt', 'w', encoding='utf-8') as test:
+        vocabulary = set()
+        train_sample = int(len(data) * 0.9)
         for i in trange(train_sample):
-            train.write(data[i] + "\n")
-        for i in trange(train_sample, dev_sample):
-            dev.write(data[i] + "\n")
-        for i in trange(dev_sample, len(data)):
-            test.write(data[i] + "\n")
+            entry = data[i]
+            train.write(entry + "\n")
+            vocabulary |= set(entry.strip().split())
+        for i in trange(train_sample, len(data)):
+            entry = data[i]
+            test.write(entry + "\n")
+            # vocabulary |= set(entry.strip().split())
+        print('', flush=True, end='')
+        print(f'{year}-2019 vocabulary size: {len(vocabulary)}')
+        print(f'{year}-2019 vocabulary: {list(vocabulary)[:100]}')
