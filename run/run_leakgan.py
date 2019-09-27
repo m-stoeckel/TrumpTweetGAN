@@ -7,10 +7,9 @@
 # @Description  : 
 # Copyrights (C) 2018. All Rights Reserved.
 
+import os
 import sys
 from subprocess import call
-
-import os
 
 # Job id and gpu_id
 if len(sys.argv) > 2:
@@ -27,13 +26,13 @@ else:
     print('Missing argument: job_id and gpu_id. Use default job_id: {}, gpu_id: {}'.format(job_id, gpu_id))
 
 # Executables
-executable = 'python'
+executable = 'python3'
 
 # =====Program=====
 if_test = int(False)
 run_model = 'leakgan'
 CUDA = int(True)
-if_real_data = [int(False), int(True)]
+if_real_data = int(True)
 data_shuffle = int(False)
 gen_init = 'normal'
 dis_init = 'uniform'
@@ -42,10 +41,10 @@ gen_pretrain = int(False)
 dis_pretrain = int(False)
 
 # =====Oracle  or Real=====
-dataset = ['oracle', 'image_coco']
+dataset = 'trump_tweets_2009-2019'
 model_type = 'vanilla'
 loss_type = 'JS'
-vocab_size = [5000, 6613]
+vocab_size = 20000
 temperature = 1
 
 # =====Basic Train=====
@@ -53,7 +52,7 @@ samples_num = 10000
 MLE_train_epoch = 8
 ADV_train_epoch = 200
 inter_epoch = 10
-batch_size = 64
+batch_size = 16
 max_seq_len = 20
 gen_lr = 0.0015
 dis_lr = 5e-5
@@ -85,8 +84,8 @@ args = [
     # Program
     '--if_test', if_test,
     '--run_model', run_model,
-    '--dataset', dataset[job_id],
-    '--if_real_data', if_real_data[job_id],
+    '--dataset', dataset,
+    '--if_real_data', if_real_data,
     '--model_type', model_type,
     '--loss_type', loss_type,
     '--cuda', CUDA,
@@ -97,7 +96,7 @@ args = [
 
     # Basic Train
     '--samples_num', samples_num,
-    '--vocab_size', vocab_size[job_id],
+    '--vocab_size', vocab_size,
     '--mle_epoch', MLE_train_epoch,
     '--adv_epoch', ADV_train_epoch,
     '--inter_epoch', inter_epoch,

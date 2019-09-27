@@ -46,7 +46,7 @@ class LeakGAN_G(nn.Module):
 
         self.goal_init = nn.Parameter(torch.rand((cfg.batch_size, goal_out_size)))
 
-        self.init_params()
+        # self.init_params()
 
     def forward(self, idx, inp, work_hidden, mana_hidden, feature, real_goal, no_log=False, train=False):
         """
