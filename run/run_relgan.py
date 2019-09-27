@@ -27,27 +27,29 @@ else:
     print('Missing argument: job_id and gpu_id. Use default job_id: {}, gpu_id: {}'.format(job_id, gpu_id))
 
 # Executables
-executable = 'python'
+executable = 'python3'
 
 # =====Program=====
 if_test = int(False)
 run_model = 'relgan'
 CUDA = int(True)
-if_real_data = [int(False), int(True)]
+if_real_data = int(True)
 data_shuffle = int(False)
-gen_init = 'truncated_normal'
+gen_init = 'normal'
 dis_init = 'uniform'
 oracle_pretrain = int(True)
 gen_pretrain = int(False)
 dis_pretrain = int(False)
 
 # =====Oracle  or Real=====
-dataset = ['oracle', 'image_coco']
+dataset = 'trump_tweets_2009-2019'
+train_data = 'dataset/' + dataset + '.txt'
+test_data = 'dataset/testdata/' + dataset + '_test.txt'
 model_type = 'vanilla'
 loss_type = 'RSGAN'
-vocab_size = [5000, 6613]
+vocab_size = 20393
 temp_adpt = 'exp'
-temperature = [2, 100]
+temperature = 100
 
 # =====Basic Train=====
 samples_num = 10000
@@ -84,8 +86,10 @@ args = [
     # Program
     '--if_test', if_test,
     '--run_model', run_model,
-    '--dataset', dataset[job_id],
-    '--if_real_data', if_real_data[job_id],
+    '--dataset', dataset,
+    '--train_data', train_data,
+    '--test_data', test_data,
+    '--if_real_data', if_real_data,
     '--model_type', model_type,
     '--loss_type', loss_type,
     '--cuda', CUDA,
@@ -96,7 +100,7 @@ args = [
 
     # Basic Train
     '--samples_num', samples_num,
-    '--vocab_size', vocab_size[job_id],
+    '--vocab_size', vocab_size,
     '--mle_epoch', MLE_train_epoch,
     '--adv_epoch', ADV_train_epoch,
     '--batch_size', batch_size,
@@ -107,7 +111,7 @@ args = [
     '--pre_log_step', pre_log_step,
     '--adv_log_step', adv_log_step,
     '--temp_adpt', temp_adpt,
-    '--temperature', temperature[job_id],
+    '--temperature', temperature,
     '--ora_pretrain', oracle_pretrain,
     '--gen_pretrain', gen_pretrain,
     '--dis_pretrain', dis_pretrain,
