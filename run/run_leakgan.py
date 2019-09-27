@@ -42,9 +42,11 @@ dis_pretrain = int(False)
 
 # =====Oracle  or Real=====
 dataset = 'trump_tweets_2009-2019'
+train_data = 'dataset/' + dataset + '.txt'
+test_data = 'dataset/testdata/' + dataset + '_test.txt'
 model_type = 'vanilla'
 loss_type = 'JS'
-vocab_size = 20000
+vocab_size = 20393
 temperature = 1
 
 # =====Basic Train=====
@@ -85,6 +87,8 @@ args = [
     '--if_test', if_test,
     '--run_model', run_model,
     '--dataset', dataset,
+    '--train_data', train_data,
+    '--test_data', test_data,
     '--if_real_data', if_real_data,
     '--model_type', model_type,
     '--loss_type', loss_type,
