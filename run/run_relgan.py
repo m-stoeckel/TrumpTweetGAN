@@ -124,7 +124,7 @@ args = [
     '--num_heads', num_heads,
     '--head_size', head_size,
     '--gen_pretrain', int(True),
-    '--pretrained_gen_path', 'pretrain/trump_tweets_2009-2019/gen_MLE_pretrain_relgan_vanilla_sl75_sn10000.pt',
+    # '--pretrained_gen_path', 'pretrain/trump_tweets_2009-2019/gen_MLE_pretrain_relgan_vanilla_sl75_sn10000.pt',
 
     # Discriminator
     '--adv_d_step', ADV_d_step,
