@@ -20,7 +20,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import argparse
 import logging
-from tqdm import trange
+from tqdm.notebook import trange
 
 import torch
 import torch.nn.functional as F
