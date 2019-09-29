@@ -70,6 +70,9 @@ def program_config(parser):
     parser.add_argument('--signal_file', default=cfg.signal_file, type=str)
     parser.add_argument('--tips', default=cfg.tips, type=str)
 
+    # Transformer
+    parser.add_argument('--gpt_path', default=cfg.gpt_path, type=str)
+
     return parser
 
 

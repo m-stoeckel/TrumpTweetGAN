@@ -6,11 +6,11 @@
 # @Blog         : http://zhiweil.ml/
 # @Description  :
 # Copyrights (C) 2018. All Rights Reserved.
+import os
+import re
 import time
 from time import strftime, localtime
 
-import os
-import re
 import torch
 
 # =====Program=====
@@ -129,6 +129,8 @@ signal_file = 'run_signal.txt'
 
 tips = ''
 
+gpt_path = 'pretrain/gpt2'
+
 
 # Init settings according to parser
 def init_param(opt):
@@ -139,7 +141,7 @@ def init_param(opt):
         gen_hidden_dim, goal_size, step_size, mem_slots, num_heads, head_size, d_step, d_epoch, \
         ADV_d_step, ADV_d_epoch, dis_embed_dim, dis_hidden_dim, num_rep, log_filename, save_root, \
         signal_file, tips, save_samples_root, save_model_root, if_real_data, pretrained_gen_path, \
-        pretrained_dis_path, pretrain_root, if_test, dataset, gen_init, dis_init, oracle_samples_path
+        pretrained_dis_path, pretrain_root, if_test, dataset, gen_init, dis_init, oracle_samples_path, gpt_path
 
     if_test = True if opt.if_test == 1 else False
     run_model = opt.run_model
@@ -197,6 +199,8 @@ def init_param(opt):
     log_filename = opt.log_file
     signal_file = opt.signal_file
     tips = opt.tips
+
+    gpt_path = opt.gpt_path
 
     # CUDA device
     torch.cuda.set_device(device)
