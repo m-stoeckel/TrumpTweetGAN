@@ -11,9 +11,13 @@ from tqdm import trange
 
 handle_regex = re.compile(r'(@\w{1,15})')
 hashtag_regex = re.compile(r'(#[\w_\d]+)')
+dot_reply_regex = re.compile(r'^\s*\.\s*@\w{1,15}.*')
 url_regex = re.compile(
     # r'((?:(?:https?|ftp)://)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\x{00a1}-\x{ffff}0-9]+-?)*[a-z\x{00a1}-\x{ffff}0-9]+)(?:\.(?:[a-z\x{00a1}-\x{ffff}0-9]+-?)*[a-z\x{00a1}-\x{ffff}0-9]+)*(?:\.(?:[a-z\x{00a1}-\x{ffff}]{2,})))(?::\d{2,5})?(?:/[^\s]*)?)'
     r'((?:http[s]?|www)\S+)'
+)
+masked_only_regex = re.compile(
+    r'^\s*(?:\s?\[[^]]+\]\s?)*\s*$'
 )
 clean_regex = re.compile(r'[^\w\-_!?:.,;()\d\'"\s#@]')
 
@@ -35,15 +39,16 @@ ALL_ACCOUNTS = (
 # TODO: Make Iterable Over Persons (other than trump)?
 class TweetDataset(Dataset):
     def __init__(self, save_dir=None, download=True, years=range(2009, 2020), account='realdonaldtrump',
-                 remove_retweets=True, remove_replies=True, remove_chaintweets=True,
-                 mask_handles=True, mask_hashtags=True, mask_urls=True):
+                 remove_retweets=True, remove_replies=True, remove_chaintweets=True, remove_masked_only=True,
+                 remove_dot_replies=False, mask_handles=True, mask_hashtags=True, mask_urls=True, to_lower=False):
         super(TweetDataset, self).__init__()
         if account not in ALL_ACCOUNTS:
-            raise ValueError(f'{account} is not a valid account name:\n{ALL_ACCOUNTS}')
+            raise ValueError(f'"{account}" is not a valid account name:\n{ALL_ACCOUNTS}')
 
         self.mask_handles = mask_handles
         self.mask_hashtags = mask_hashtags
         self.mask_urls = mask_urls
+        self.to_lower = to_lower
 
         file_list = []
 
@@ -79,7 +84,6 @@ class TweetDataset(Dataset):
                     pass
         print(f'{account}: {len(self.tweets)} raw tweets')
 
-        # remove re-tweets
         if remove_retweets:
             self.tweets = list(
                 filter(lambda tw: not tw.get('is_retweet', True),
@@ -88,45 +92,53 @@ class TweetDataset(Dataset):
             self.tweets = list(
                 filter(lambda tw: not tw.get('in_reply_to_user_id_str', None),
                        self.tweets))
-        # remove chain tweets
         if remove_chaintweets:
             self.tweets = list(
                 filter(lambda tw: not (tw.get('text', "").endswith("..") or tw.get('text', "").startswith("..")),
                        self.tweets))
+        if remove_dot_replies:
+            self.tweets = list(
+                filter(lambda tw: dot_reply_regex.fullmatch(tw.get('text', "")) is None,
+                       self.tweets)
+            )
+        self.tweets = list(
+            map(self.get_text, self.tweets)
+        )
+        if remove_masked_only:
+            self.tweets = list(
+                filter(lambda tw: masked_only_regex.fullmatch(tw) is None,
+                       self.tweets))
+
         print(f'{account}: {len(self.tweets)} clean tweets')
 
     def __getitem__(self, item):
-        tweet: dict = self.tweets[item]
-        text: str = tweet.get('text', "")
+        return self.tweets[item]
 
+    def get_text(self, tweet):
+        text: str = tweet.get('text', "")
         # unescape HTML content
         text = html.unescape(text)
-
         # strip leading and trailing quotes
         text = text.strip().lstrip("\"'").rstrip("\"'")
-
         # replace spaces
         text = re.sub(r'\s+', ' ', text)
-
         # replace non text
         text = clean_regex.sub('', text)
-
         # replace @-handles with masks
         if self.mask_handles:
             text = handle_regex.sub(' [HANDLE] ', text)
-
         # replace hashtags with masks
         if self.mask_hashtags:
             text = hashtag_regex.sub(' [HASHTAG] ', text)
-
         # replace links
         if self.mask_urls:
             text = url_regex.sub(' [URL] ', text)
-
         text = self.tokenize(text)
-
         # replace spaces again
         text = re.sub(r'\s+', ' ', text)
+        # lower case
+        if self.to_lower:
+            text = text.lower()
 
         return text
 
