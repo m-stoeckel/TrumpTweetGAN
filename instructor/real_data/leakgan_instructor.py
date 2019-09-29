@@ -200,8 +200,11 @@ class LeakGANInstructor(BasicInstructor):
                 gen_nll += loss.item()
             gen_nll /= len(self.train_data.loader)
 
-        if fmt_str:
-            return 'BLEU-3 = %.4f, gen_NLL = %.4f,' % (bleu_score, gen_nll)
+        try:
+            if fmt_str:
+                return 'BLEU-3 = %.4f, gen_NLL = %.4f,' % (bleu_score, gen_nll)
+        except:
+            pass
         return bleu_score, gen_nll
 
     def _save(self, phrase, epoch):

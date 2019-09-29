@@ -38,8 +38,8 @@ data_shuffle = int(False)
 gen_init = 'normal'
 dis_init = 'uniform'
 oracle_pretrain = int(True)
-gen_pretrain = int(False)
-dis_pretrain = int(False)
+gen_pretrain = int(True)
+dis_pretrain = int(True)
 
 # =====Oracle  or Real=====
 dataset = 'trump_tweets_2009-2019'
