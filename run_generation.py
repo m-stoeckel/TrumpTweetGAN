@@ -20,28 +20,26 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import argparse
 import logging
-from tqdm.notebook import trange
 
+import numpy as np
 import torch
 import torch.nn.functional as F
-import numpy as np
-
+from tqdm.notebook import trange
 from transformers import GPT2Config, OpenAIGPTConfig, XLNetConfig, TransfoXLConfig
-
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 from transformers import OpenAIGPTLMHeadModel, OpenAIGPTTokenizer
-from transformers import XLNetLMHeadModel, XLNetTokenizer
 from transformers import TransfoXLLMHeadModel, TransfoXLTokenizer
+from transformers import XLNetLMHeadModel, XLNetTokenizer
 
-
-logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
-                    datefmt = '%m/%d/%Y %H:%M:%S',
-                    level = logging.INFO)
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
+                    datefmt='%m/%d/%Y %H:%M:%S',
+                    level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 MAX_LENGTH = int(10000)  # Hardcoded max length to avoid infinite loop
 
-ALL_MODELS = sum((tuple(conf.pretrained_config_archive_map.keys()) for conf in (GPT2Config, OpenAIGPTConfig, XLNetConfig, TransfoXLConfig)), ())
+ALL_MODELS = sum((tuple(conf.pretrained_config_archive_map.keys()) for conf in
+                  (GPT2Config, OpenAIGPTConfig, XLNetConfig, TransfoXLConfig)), ())
 
 MODEL_CLASSES = {
     'gpt2': (GPT2LMHeadModel, GPT2Tokenizer),
@@ -103,7 +101,8 @@ def top_k_top_p_filtering(logits, top_k=0, top_p=0.0, filter_value=-float('Inf')
     return logits
 
 
-def sample_sequence(model, length, context, num_samples=1, temperature=1, top_k=0, top_p=0.0, is_xlnet=False, device='cpu'):
+def sample_sequence(model, length, context, num_samples=1, temperature=1, top_k=0, top_p=0.0, is_xlnet=False,
+                    device='cpu'):
     context = torch.tensor(context, dtype=torch.long, device=device)
     context = context.unsqueeze(0).repeat(num_samples, 1)
     generated = context
@@ -121,7 +120,8 @@ def sample_sequence(model, length, context, num_samples=1, temperature=1, top_k=
                 target_mapping[0, 0, -1] = 1.0  # predict last token
                 inputs = {'input_ids': input_ids, 'perm_mask': perm_mask, 'target_mapping': target_mapping}
 
-            outputs = model(**inputs)  # Note: we could also use 'past' with GPT-2/Transfo-XL/XLNet (cached hidden-states)
+            outputs = model(
+                **inputs)  # Note: we could also use 'past' with GPT-2/Transfo-XL/XLNet (cached hidden-states)
             next_token_logits = outputs[0][0, -1, :] / temperature
             filtered_logits = top_k_top_p_filtering(next_token_logits, top_k=top_k, top_p=top_p)
             next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
@@ -134,8 +134,9 @@ def main():
     parser.add_argument("--model_type", default=None, type=str, required=True,
                         help="Model type selected in the list: " + ", ".join(MODEL_CLASSES.keys()))
     parser.add_argument("--model_name_or_path", default=None, type=str, required=True,
-                        help="Path to pre-trained model or shortcut name selected in the list: " + ", ".join(ALL_MODELS))
-    parser.add_argument("--prompt", type=str, default="")
+                        help="Path to pre-trained model or shortcut name selected in the list: " + ", ".join(
+                            ALL_MODELS))
+    parser.add_argument("--prompt", type=str, default='dataset/testdata/trump_tweets_2016-2019_test.txt')
     parser.add_argument("--padding_text", type=str, default="")
     parser.add_argument("--length", type=int, default=20)
     parser.add_argument("--temperature", type=float, default=1.0)
@@ -167,27 +168,46 @@ def main():
         args.length = MAX_LENGTH  # avoid infinite loop
 
     print(args)
-    while True:
-        raw_text = args.prompt if args.prompt else input("Model prompt >>> ")
-        if args.model_type in ["transfo-xl", "xlnet"]:
-            # Models with memory likes to have a long prompt for short inputs.
-            raw_text = (args.padding_text if args.padding_text else PADDING_TEXT) + raw_text
-        context_tokens = tokenizer.encode(raw_text)
-        out = sample_sequence(
-            model=model,
-            context=context_tokens,
-            length=args.length,
-            temperature=args.temperature,
-            top_k=args.top_k,
-            top_p=args.top_p,
-            device=args.device,
-            is_xlnet=bool(args.model_type == "xlnet"),
-        )
-        out = out[0, len(context_tokens):].tolist()
-        text = tokenizer.decode(out, clean_up_tokenization_spaces=True)
-        print(text)
-        if args.prompt:
-            break
+    with open(args.prompt, 'r', encoding='utf-8') as test_file:
+        for sample in test_file:
+            raw_text = sample.strip()
+            context_tokens = tokenizer.encode(raw_text)
+            out = sample_sequence(
+                model=model,
+                context=context_tokens,
+                length=args.length,
+                temperature=args.temperature,
+                top_k=args.top_k,
+                top_p=args.top_p,
+                device=args.device,
+                is_xlnet=bool(args.model_type == "xlnet"),
+            )
+            out = out[0, len(context_tokens):].tolist()
+            text = tokenizer.decode(out, clean_up_tokenization_spaces=True)
+            print(text)
+
+    # while True:
+    #     #     raw_text = args.prompt if args.prompt else input("Model prompt >>> ")
+    #     #     if args.model_type in ["transfo-xl", "xlnet"]:
+    #     #         # Models with memory likes to have a long prompt for short inputs.
+    #     #         raw_text = (args.padding_text if args.padding_text else PADDING_TEXT) + raw_text
+    #     #     context_tokens = tokenizer.encode(raw_text)
+    #     #     out = sample_sequence(
+    #     #         model=model,
+    #     #         context=context_tokens,
+    #     #         length=args.length,
+    #     #         temperature=args.temperature,
+    #     #         top_k=args.top_k,
+    #     #         top_p=args.top_p,
+    #     #         device=args.device,
+    #     #         is_xlnet=bool(args.model_type == "xlnet"),
+    #     #     )
+    #     #     out = out[0, len(context_tokens):].tolist()
+    #     #     text = tokenizer.decode(out, clean_up_tokenization_spaces=True)
+    #     #     print(text)
+    #     #     if args.prompt:
+    #     #         break
+
     return text
 
 
