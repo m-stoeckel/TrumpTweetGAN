@@ -1,0 +1,100 @@
+====================================================================================================
+> training arguments:
+>>> if_test: 0
+>>> run_model: leakgan
+>>> dataset: trump_tweets_2009-2019
+>>> model_type: vanilla
+>>> loss_type: JS
+>>> if_real_data: 1
+>>> cuda: 1
+>>> device: 0
+>>> shuffle: 0
+>>> gen_init: normal
+>>> dis_init: uniform
+>>> samples_num: 10000
+>>> vocab_size: 20420
+>>> mle_epoch: 8
+>>> adv_epoch: 200
+>>> inter_epoch: 10
+>>> batch_size: 16
+>>> max_seq_len: 75
+>>> start_letter: 1
+>>> padding_idx: 0
+>>> gen_lr: 0.0015
+>>> gen_adv_lr: 0.0001
+>>> dis_lr: 5e-05
+>>> clip_norm: 5.0
+>>> pre_log_step: 1
+>>> adv_log_step: 1
+>>> train_data: dataset/trump_tweets_2009-2019.txt
+>>> test_data: dataset/testdata/trump_tweets_2009-2019_test.txt
+>>> temp_adpt: exp
+>>> temperature: 1
+>>> ora_pretrain: 1
+>>> gen_pretrain: 0
+>>> dis_pretrain: 1
+>>> adv_g_step: 1
+>>> rollout_num: 4
+>>> gen_embed_dim: 32
+>>> gen_hidden_dim: 32
+>>> goal_size: 16
+>>> step_size: 4
+>>> mem_slots: 1
+>>> num_heads: 2
+>>> head_size: 256
+>>> d_step: 5
+>>> d_epoch: 3
+>>> adv_d_step: 5
+>>> adv_d_epoch: 3
+>>> dis_embed_dim: 64
+>>> dis_hidden_dim: 64
+>>> num_rep: 64
+>>> log_file: log/log_0929_2023_12.txt
+>>> save_root: save/20190929/trump_tweets_2009-2019/leakgan_vanilla_lt-JS_sl75_temp1_T0929_2023_12/
+>>> signal_file: run_signal.txt
+>>> tips: vanilla LeakGAN
+====================================================================================================
+Load pretrain_generator discriminator: pretrain/trump_tweets_2009-2019/dis_pretrain_leakgan_vanilla_sl75_sn10000.pt
+>>> Interleaved Round 0...
+Starting Generator MLE Training...
+[MLE-GEN] epoch 0 : pre_mana_loss = -0.2829, pre_work_loss = 1.8991, ([0.52], 1.5997913525559595)
+[MLE-GEN] epoch 1 : pre_mana_loss = -0.2974, pre_work_loss = 1.5719, ([0.545], 1.4881179923833159)
+[MLE-GEN] epoch 2 : pre_mana_loss = -0.2981, pre_work_loss = 1.4865, ([0.559], 1.4236561883534633)
+[MLE-GEN] epoch 3 : pre_mana_loss = -0.2986, pre_work_loss = 1.4240, ([0.545], 1.3835210380959808)
+[MLE-GEN] epoch 4 : pre_mana_loss = -0.2992, pre_work_loss = 1.3709, ([0.565], 1.358864760188641)
+[MLE-GEN] epoch 5 : pre_mana_loss = -0.2994, pre_work_loss = 1.3259, ([0.558], 1.3414741944351631)
+[MLE-GEN] epoch 6 : pre_mana_loss = -0.2996, pre_work_loss = 1.2885, ([0.535], 1.3257405517383236)
+[MLE-GEN] epoch 7 : pre_mana_loss = -0.2998, pre_work_loss = 1.2571, ([0.544], 1.3134031784237667)
+>>> Interleaved Round 1...
+Starting Generator MLE Training...
+[MLE-GEN] epoch 0 : pre_mana_loss = -0.2999, pre_work_loss = 1.2301, ([0.55], 1.3049522135329443)
+[MLE-GEN] epoch 1 : pre_mana_loss = -0.3000, pre_work_loss = 1.2063, ([0.55], 1.298363567016926)
+[MLE-GEN] epoch 2 : pre_mana_loss = -0.3002, pre_work_loss = 1.1853, ([0.528], 1.2915922570896345)
+[MLE-GEN] epoch 3 : pre_mana_loss = -0.3003, pre_work_loss = 1.1664, ([0.553], 1.2853750247987474)
+[MLE-GEN] epoch 4 : pre_mana_loss = -0.3004, pre_work_loss = 1.1494, ([0.529], 1.2794711300755437)
+[MLE-GEN] epoch 5 : pre_mana_loss = -0.3005, pre_work_loss = 1.1339, ([0.547], 1.2740284999932985)
+[MLE-GEN] epoch 6 : pre_mana_loss = -0.3006, pre_work_loss = 1.1197, ([0.531], 1.2694897299856567)
+[MLE-GEN] epoch 7 : pre_mana_loss = -0.3007, pre_work_loss = 1.1067, ([0.557], 1.2656886229500237)
+>>> Interleaved Round 2...
+Starting Generator MLE Training...
+[MLE-GEN] epoch 0 : pre_mana_loss = -0.3008, pre_work_loss = 1.0948, ([0.519], 1.2624069703317777)
+[MLE-GEN] epoch 1 : pre_mana_loss = -0.3010, pre_work_loss = 1.0839, ([0.53], 1.2597793540086488)
+[MLE-GEN] epoch 2 : pre_mana_loss = -0.3011, pre_work_loss = 1.0740, ([0.495], 1.2576193108350904)
+[MLE-GEN] epoch 3 : pre_mana_loss = -0.3012, pre_work_loss = 1.0648, ([0.529], 1.255643077689335)
+[MLE-GEN] epoch 4 : pre_mana_loss = -0.3013, pre_work_loss = 1.0563, ([0.544], 1.2534653810297305)
+[MLE-GEN] epoch 5 : pre_mana_loss = -0.3014, pre_work_loss = 1.0484, ([0.537], 1.2509463925641107)
+[MLE-GEN] epoch 6 : pre_mana_loss = -0.3015, pre_work_loss = 1.0410, ([0.533], 1.2482216188150816)
+[MLE-GEN] epoch 7 : pre_mana_loss = -0.3009, pre_work_loss = 1.0422, ([0.551], 1.2479254069788328)
+>>> Interleaved Round 3...
+Starting Generator MLE Training...
+[MLE-GEN] epoch 0 : pre_mana_loss = -0.3013, pre_work_loss = 1.0321, ([0.536], 1.2425818412383067)
+[MLE-GEN] epoch 1 : pre_mana_loss = -0.3015, pre_work_loss = 1.0241, ([0.531], 1.2395568178093286)
+[MLE-GEN] epoch 2 : pre_mana_loss = -0.3017, pre_work_loss = 1.0173, ([0.558], 1.2368866791369015)
+[MLE-GEN] epoch 3 : pre_mana_loss = -0.3018, pre_work_loss = 1.0110, ([0.549], 1.2345036073468039)
+[MLE-GEN] epoch 4 : pre_mana_loss = -0.3019, pre_work_loss = 1.0052, ([0.544], 1.2328374391707642)
+[MLE-GEN] epoch 5 : pre_mana_loss = -0.3020, pre_work_loss = 0.9997, ([0.572], 1.2314760331296328)
+[MLE-GEN] epoch 6 : pre_mana_loss = -0.3021, pre_work_loss = 0.9946, ([0.574], 1.2304954927306453)
+[MLE-GEN] epoch 7 : pre_mana_loss = -0.3022, pre_work_loss = 0.9899, ([0.534], 1.2295572512562838)
+>>> Interleaved Round 4...
+Starting Generator MLE Training...
+[MLE-GEN] epoch 0 : pre_mana_loss = -0.3023, pre_work_loss = 0.9854, ([0.564], 1.2287074745134199)

@@ -1,0 +1,92 @@
+====================================================================================================
+> training arguments:
+>>> if_test: 0
+>>> run_model: seqgan
+>>> dataset: trump_tweets_2009-2019
+>>> model_type: vanilla
+>>> loss_type: JS
+>>> if_real_data: 1
+>>> cuda: 1
+>>> device: 0
+>>> shuffle: 0
+>>> gen_init: normal
+>>> dis_init: uniform
+>>> samples_num: 10000
+>>> vocab_size: 20420
+>>> mle_epoch: 120
+>>> adv_epoch: 200
+>>> inter_epoch: 10
+>>> batch_size: 64
+>>> max_seq_len: 75
+>>> start_letter: 1
+>>> padding_idx: 0
+>>> gen_lr: 0.01
+>>> gen_adv_lr: 0.0001
+>>> dis_lr: 0.0001
+>>> clip_norm: 5.0
+>>> pre_log_step: 5
+>>> adv_log_step: 1
+>>> train_data: dataset/trump_tweets_2009-2019.txt
+>>> test_data: dataset/testdata/trump_tweets_2009-2019_test.txt
+>>> temp_adpt: exp
+>>> temperature: 1
+>>> ora_pretrain: 1
+>>> gen_pretrain: 0
+>>> dis_pretrain: 0
+>>> adv_g_step: 1
+>>> rollout_num: 16
+>>> gen_embed_dim: 32
+>>> gen_hidden_dim: 32
+>>> goal_size: 16
+>>> step_size: 4
+>>> mem_slots: 1
+>>> num_heads: 2
+>>> head_size: 256
+>>> d_step: 5
+>>> d_epoch: 3
+>>> adv_d_step: 4
+>>> adv_d_epoch: 2
+>>> dis_embed_dim: 64
+>>> dis_hidden_dim: 64
+>>> num_rep: 64
+>>> log_file: log/log_0929_1518_14.txt
+>>> save_root: save/20190929/trump_tweets_2009-2019/seqgan_vanilla_lt-JS_sl75_temp1_T0929_1518_14/
+>>> signal_file: run_signal.txt
+>>> tips: vanilla SeqGAN
+====================================================================================================
+Starting Generator MLE Training...
+[MLE-GEN] epoch 0 : pre_loss = 2.4518, BLEU-[3] = [0.295], gen_NLL = 1.8823, self_bleu = [0.393],
+[MLE-GEN] epoch 5 : pre_loss = 1.4446, BLEU-[3] = [0.51], gen_NLL = 1.4006, self_bleu = [0.632],
+[MLE-GEN] epoch 10 : pre_loss = 1.3406, BLEU-[3] = [0.534], gen_NLL = 1.3104, self_bleu = [0.625],
+[MLE-GEN] epoch 15 : pre_loss = 1.2928, BLEU-[3] = [0.554], gen_NLL = 1.2694, self_bleu = [0.641],
+[MLE-GEN] epoch 20 : pre_loss = 1.2664, BLEU-[3] = [0.557], gen_NLL = 1.2483, self_bleu = [0.613],
+[MLE-GEN] epoch 25 : pre_loss = 1.2494, BLEU-[3] = [0.541], gen_NLL = 1.2354, self_bleu = [0.639],
+[MLE-GEN] epoch 30 : pre_loss = 1.2377, BLEU-[3] = [0.523], gen_NLL = 1.2255, self_bleu = [0.641],
+[MLE-GEN] epoch 35 : pre_loss = 1.2288, BLEU-[3] = [0.558], gen_NLL = 1.2193, self_bleu = [0.628],
+[MLE-GEN] epoch 40 : pre_loss = 1.2216, BLEU-[3] = [0.537], gen_NLL = 1.2127, self_bleu = [0.645],
+[MLE-GEN] epoch 45 : pre_loss = 1.2157, BLEU-[3] = [0.543], gen_NLL = 1.2084, self_bleu = [0.645],
+[MLE-GEN] epoch 50 : pre_loss = 1.2106, BLEU-[3] = [0.558], gen_NLL = 1.2057, self_bleu = [0.653],
+[MLE-GEN] epoch 55 : pre_loss = 1.2067, BLEU-[3] = [0.522], gen_NLL = 1.2042, self_bleu = [0.646],
+[MLE-GEN] epoch 60 : pre_loss = 1.2032, BLEU-[3] = [0.549], gen_NLL = 1.1992, self_bleu = [0.638],
+[MLE-GEN] epoch 65 : pre_loss = 1.2014, BLEU-[3] = [0.553], gen_NLL = 1.1989, self_bleu = [0.626],
+[MLE-GEN] epoch 70 : pre_loss = 1.1978, BLEU-[3] = [0.57], gen_NLL = 1.1977, self_bleu = [0.64],
+[MLE-GEN] epoch 75 : pre_loss = 1.1948, BLEU-[3] = [0.515], gen_NLL = 1.1956, self_bleu = [0.641],
+[MLE-GEN] epoch 80 : pre_loss = 1.1937, BLEU-[3] = [0.533], gen_NLL = 1.1938, self_bleu = [0.662],
+[MLE-GEN] epoch 85 : pre_loss = 1.1928, BLEU-[3] = [0.544], gen_NLL = 1.1910, self_bleu = [0.633],
+[MLE-GEN] epoch 90 : pre_loss = 1.1900, BLEU-[3] = [0.529], gen_NLL = 1.1916, self_bleu = [0.649],
+[MLE-GEN] epoch 95 : pre_loss = 1.1876, BLEU-[3] = [0.546], gen_NLL = 1.1900, self_bleu = [0.661],
+[MLE-GEN] epoch 100 : pre_loss = 1.1865, BLEU-[3] = [0.531], gen_NLL = 1.1886, self_bleu = [0.646],
+[MLE-GEN] epoch 105 : pre_loss = 1.1859, BLEU-[3] = [0.531], gen_NLL = 1.1904, self_bleu = [0.624],
+[MLE-GEN] epoch 110 : pre_loss = 1.1850, BLEU-[3] = [0.571], gen_NLL = 1.1907, self_bleu = [0.639],
+[MLE-GEN] epoch 115 : pre_loss = 1.1844, BLEU-[3] = [0.529], gen_NLL = 1.1899, self_bleu = [0.647],
+Starting Discriminator Training...
+[MLE-DIS] d_step 0: d_loss = 0.4084, train_acc = 0.8135,
+[MLE-DIS] d_step 1: d_loss = 0.1782, train_acc = 0.9416,
+[MLE-DIS] d_step 2: d_loss = 0.0762, train_acc = 0.9817,
+[MLE-DIS] d_step 3: d_loss = 0.0407, train_acc = 0.9911,
+[MLE-DIS] d_step 4: d_loss = 0.0246, train_acc = 0.9944,
+Starting Adversarial Training...
+Initial generator: BLEU-[3] = [0.536], gen_NLL = 1.1899, self_bleu = [0.645],
+-----
+ADV EPOCH 0
+-----

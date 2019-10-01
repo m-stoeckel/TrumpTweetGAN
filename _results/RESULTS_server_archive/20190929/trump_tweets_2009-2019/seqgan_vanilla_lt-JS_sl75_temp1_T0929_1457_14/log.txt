@@ -1,0 +1,58 @@
+====================================================================================================
+> training arguments:
+>>> if_test: 0
+>>> run_model: seqgan
+>>> dataset: trump_tweets_2009-2019
+>>> model_type: vanilla
+>>> loss_type: JS
+>>> if_real_data: 1
+>>> cuda: 1
+>>> device: 0
+>>> shuffle: 0
+>>> gen_init: normal
+>>> dis_init: uniform
+>>> samples_num: 10000
+>>> vocab_size: 20420
+>>> mle_epoch: 120
+>>> adv_epoch: 200
+>>> inter_epoch: 10
+>>> batch_size: 64
+>>> max_seq_len: 75
+>>> start_letter: 1
+>>> padding_idx: 0
+>>> gen_lr: 0.01
+>>> gen_adv_lr: 0.0001
+>>> dis_lr: 0.0001
+>>> clip_norm: 5.0
+>>> pre_log_step: 5
+>>> adv_log_step: 1
+>>> train_data: dataset/trump_tweets_2009-2019.txt
+>>> test_data: dataset/testdata/trump_tweets_2009-2019_test.txt
+>>> temp_adpt: exp
+>>> temperature: 1
+>>> ora_pretrain: 1
+>>> gen_pretrain: 0
+>>> dis_pretrain: 0
+>>> adv_g_step: 1
+>>> rollout_num: 16
+>>> gen_embed_dim: 32
+>>> gen_hidden_dim: 32
+>>> goal_size: 16
+>>> step_size: 4
+>>> mem_slots: 1
+>>> num_heads: 2
+>>> head_size: 256
+>>> d_step: 5
+>>> d_epoch: 3
+>>> adv_d_step: 4
+>>> adv_d_epoch: 2
+>>> dis_embed_dim: 64
+>>> dis_hidden_dim: 64
+>>> num_rep: 64
+>>> log_file: log/log_0929_1457_14.txt
+>>> save_root: save/20190929/trump_tweets_2009-2019/seqgan_vanilla_lt-JS_sl75_temp1_T0929_1457_14/
+>>> signal_file: run_signal.txt
+>>> tips: vanilla SeqGAN
+====================================================================================================
+Starting Generator MLE Training...
+[MLE-GEN] epoch 0 : pre_loss = 2.4758, BLEU-[3] = [0.4], gen_NLL = 1.8748, self_bleu = [0.467],

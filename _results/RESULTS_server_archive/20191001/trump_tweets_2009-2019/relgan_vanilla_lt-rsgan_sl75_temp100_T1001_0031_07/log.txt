@@ -1,0 +1,131 @@
+====================================================================================================
+> training arguments:
+>>> if_test: 0
+>>> run_model: relgan
+>>> dataset: trump_tweets_2009-2019
+>>> model_type: vanilla
+>>> loss_type: rsgan
+>>> if_real_data: 1
+>>> cuda: 1
+>>> device: 1
+>>> shuffle: 0
+>>> gen_init: normal
+>>> dis_init: uniform
+>>> samples_num: 10000
+>>> vocab_size: 20411
+>>> mle_epoch: 150
+>>> adv_epoch: 3000
+>>> inter_epoch: 10
+>>> batch_size: 64
+>>> max_seq_len: 75
+>>> start_letter: 1
+>>> padding_idx: 0
+>>> gen_lr: 0.01
+>>> gen_adv_lr: 0.0001
+>>> dis_lr: 0.0001
+>>> clip_norm: 5.0
+>>> pre_log_step: 10
+>>> adv_log_step: 20
+>>> train_data: dataset/trump_tweets_2009-2019.txt
+>>> test_data: dataset/testdata/trump_tweets_2009-2019_test.txt
+>>> temp_adpt: exp
+>>> temperature: 100
+>>> ora_pretrain: 1
+>>> gen_pretrain: 0
+>>> dis_pretrain: 0
+>>> adv_g_step: 1
+>>> rollout_num: 4
+>>> gen_embed_dim: 32
+>>> gen_hidden_dim: 32
+>>> goal_size: 16
+>>> step_size: 4
+>>> mem_slots: 1
+>>> num_heads: 2
+>>> head_size: 256
+>>> d_step: 5
+>>> d_epoch: 3
+>>> adv_d_step: 5
+>>> adv_d_epoch: 3
+>>> dis_embed_dim: 64
+>>> dis_hidden_dim: 64
+>>> num_rep: 64
+>>> log_file: log/log_1001_0031_07.txt
+>>> save_root: save/20191001/trump_tweets_2009-2019/relgan_vanilla_lt-rsgan_sl75_temp100_T1001_0031_07/
+>>> signal_file: run_signal.txt
+>>> tips: vanilla RelGAN
+====================================================================================================
+Starting Generator MLE Training...
+[MLE-GEN] epoch 0 : pre_loss = 1.8631, BLEU-[2, 3, 4, 5] = [0.752, 0.529, 0.389, 0.292], gen_NLL = 1.5231, self_bleu = [0.592],
+[MLE-GEN] epoch 10 : pre_loss = 1.1214, BLEU-[2, 3, 4, 5] = [0.792, 0.581, 0.43, 0.319], gen_NLL = 1.1110, self_bleu = [0.664],
+[MLE-GEN] epoch 20 : pre_loss = 1.0155, BLEU-[2, 3, 4, 5] = [0.782, 0.555, 0.396, 0.283], gen_NLL = 1.0312, self_bleu = [0.699],
+[MLE-GEN] epoch 30 : pre_loss = 0.9691, BLEU-[2, 3, 4, 5] = [0.798, 0.585, 0.431, 0.326], gen_NLL = 1.0040, self_bleu = [0.686],
+[MLE-GEN] epoch 40 : pre_loss = 0.9445, BLEU-[2, 3, 4, 5] = [0.797, 0.569, 0.398, 0.283], gen_NLL = 0.9906, self_bleu = [0.694],
+[MLE-GEN] epoch 50 : pre_loss = 0.9368, BLEU-[2, 3, 4, 5] = [0.806, 0.594, 0.434, 0.332], gen_NLL = 0.9821, self_bleu = [0.706],
+[MLE-GEN] epoch 60 : pre_loss = 0.9254, BLEU-[2, 3, 4, 5] = [0.802, 0.588, 0.439, 0.327], gen_NLL = 0.9776, self_bleu = [0.724],
+[MLE-GEN] epoch 70 : pre_loss = 0.9060, BLEU-[2, 3, 4, 5] = [0.817, 0.606, 0.46, 0.353], gen_NLL = 0.9611, self_bleu = [0.719],
+[MLE-GEN] epoch 80 : pre_loss = 0.9012, BLEU-[2, 3, 4, 5] = [0.791, 0.574, 0.421, 0.308], gen_NLL = 0.9615, self_bleu = [0.732],
+[MLE-GEN] epoch 90 : pre_loss = 1.4019, BLEU-[2, 3, 4, 5] = [0.793, 0.581, 0.432, 0.316], gen_NLL = 0.9749, self_bleu = [0.707],
+[MLE-GEN] epoch 100 : pre_loss = 0.8970, BLEU-[2, 3, 4, 5] = [0.807, 0.593, 0.437, 0.324], gen_NLL = 0.9534, self_bleu = [0.699],
+[MLE-GEN] epoch 110 : pre_loss = 0.8858, BLEU-[2, 3, 4, 5] = [0.797, 0.59, 0.44, 0.331], gen_NLL = 0.9579, self_bleu = [0.716],
+[MLE-GEN] epoch 120 : pre_loss = 0.8869, BLEU-[2, 3, 4, 5] = [0.775, 0.548, 0.39, 0.283], gen_NLL = 0.9524, self_bleu = [0.721],
+[MLE-GEN] epoch 130 : pre_loss = 0.8797, BLEU-[2, 3, 4, 5] = [0.811, 0.595, 0.438, 0.337], gen_NLL = 0.9494, self_bleu = [0.728],
+[MLE-GEN] epoch 140 : pre_loss = 0.8747, BLEU-[2, 3, 4, 5] = [0.789, 0.574, 0.427, 0.32], gen_NLL = 0.9535, self_bleu = [0.703],
+[MLE-GEN] epoch 149 : pre_loss = 0.8720, BLEU-[2, 3, 4, 5] = [0.785, 0.566, 0.414, 0.297], gen_NLL = 0.9486, self_bleu = [0.694],
+Starting Adversarial Training...
+[ADV] epoch 0: g_loss: 0.6931, d_loss: 0.6930, BLEU-[2, 3, 4, 5] = [0.807, 0.601, 0.45, 0.337], gen_NLL = 0.9487, self_bleu = [0.736],
+[ADV] epoch 20: g_loss: 0.8419, d_loss: 0.5535, BLEU-[2, 3, 4, 5] = [0.811, 0.609, 0.453, 0.34], gen_NLL = 0.9490, self_bleu = [0.731],
+[ADV] epoch 40: g_loss: 3.1230, d_loss: 0.1078, BLEU-[2, 3, 4, 5] = [0.83, 0.626, 0.469, 0.356], gen_NLL = 0.9525, self_bleu = [0.758],
+[ADV] epoch 60: g_loss: 4.7406, d_loss: 0.0453, BLEU-[2, 3, 4, 5] = [0.845, 0.653, 0.503, 0.387], gen_NLL = 0.9669, self_bleu = [0.801],
+[ADV] epoch 80: g_loss: 6.5946, d_loss: 0.0340, BLEU-[2, 3, 4, 5] = [0.881, 0.716, 0.575, 0.461], gen_NLL = 0.9945, self_bleu = [0.831],
+[ADV] epoch 100: g_loss: 6.5205, d_loss: 0.0388, BLEU-[2, 3, 4, 5] = [0.903, 0.773, 0.66, 0.557], gen_NLL = 1.0315, self_bleu = [0.849],
+[ADV] epoch 120: g_loss: 7.1410, d_loss: 0.0179, BLEU-[2, 3, 4, 5] = [0.909, 0.794, 0.689, 0.592], gen_NLL = 1.0725, self_bleu = [0.869],
+[ADV] epoch 140: g_loss: 7.9168, d_loss: 0.0244, BLEU-[2, 3, 4, 5] = [0.917, 0.824, 0.736, 0.654], gen_NLL = 1.1243, self_bleu = [0.878],
+[ADV] epoch 160: g_loss: 9.0102, d_loss: 0.0186, BLEU-[2, 3, 4, 5] = [0.914, 0.824, 0.74, 0.665], gen_NLL = 1.1872, self_bleu = [0.925],
+[ADV] epoch 180: g_loss: 10.0719, d_loss: 0.0133, BLEU-[2, 3, 4, 5] = [0.874, 0.82, 0.774, 0.736], gen_NLL = 1.2868, self_bleu = [0.94],
+[ADV] epoch 200: g_loss: 9.9496, d_loss: 0.0153, BLEU-[2, 3, 4, 5] = [0.695, 0.622, 0.573, 0.535], gen_NLL = 1.3533, self_bleu = [0.957],
+[ADV] epoch 220: g_loss: 9.4760, d_loss: 0.0078, BLEU-[2, 3, 4, 5] = [0.613, 0.53, 0.477, 0.439], gen_NLL = 1.3916, self_bleu = [0.951],
+[ADV] epoch 240: g_loss: 11.5669, d_loss: 0.0122, BLEU-[2, 3, 4, 5] = [0.633, 0.54, 0.477, 0.424], gen_NLL = 1.4301, self_bleu = [0.954],
+[ADV] epoch 260: g_loss: 11.6596, d_loss: 0.0297, BLEU-[2, 3, 4, 5] = [0.673, 0.561, 0.481, 0.413], gen_NLL = 1.4753, self_bleu = [0.941],
+[ADV] epoch 280: g_loss: 10.4051, d_loss: 0.0184, BLEU-[2, 3, 4, 5] = [0.805, 0.662, 0.55, 0.453], gen_NLL = 1.5139, self_bleu = [0.928],
+[ADV] epoch 300: g_loss: 9.8019, d_loss: 0.0223, BLEU-[2, 3, 4, 5] = [0.831, 0.684, 0.56, 0.449], gen_NLL = 1.5474, self_bleu = [0.92],
+[ADV] epoch 320: g_loss: 10.3571, d_loss: 0.0143, BLEU-[2, 3, 4, 5] = [0.819, 0.654, 0.513, 0.389], gen_NLL = 1.5912, self_bleu = [0.915],
+[ADV] epoch 340: g_loss: 10.9937, d_loss: 0.0121, BLEU-[2, 3, 4, 5] = [0.827, 0.688, 0.571, 0.464], gen_NLL = 1.6361, self_bleu = [0.935],
+[ADV] epoch 360: g_loss: 12.0883, d_loss: 0.0094, BLEU-[2, 3, 4, 5] = [0.885, 0.781, 0.691, 0.602], gen_NLL = 1.6647, self_bleu = [0.937],
+[ADV] epoch 380: g_loss: 10.8799, d_loss: 0.0140, BLEU-[2, 3, 4, 5] = [0.897, 0.779, 0.671, 0.571], gen_NLL = 1.6788, self_bleu = [0.915],
+[ADV] epoch 400: g_loss: 11.0724, d_loss: 0.0110, BLEU-[2, 3, 4, 5] = [0.903, 0.793, 0.684, 0.577], gen_NLL = 1.7400, self_bleu = [0.916],
+[ADV] epoch 420: g_loss: 12.3962, d_loss: 0.0079, BLEU-[2, 3, 4, 5] = [0.909, 0.792, 0.679, 0.565], gen_NLL = 1.8225, self_bleu = [0.925],
+[ADV] epoch 440: g_loss: 12.7673, d_loss: 0.0164, BLEU-[2, 3, 4, 5] = [0.92, 0.812, 0.707, 0.601], gen_NLL = 1.9371, self_bleu = [0.925],
+[ADV] epoch 460: g_loss: 12.5552, d_loss: 0.0066, BLEU-[2, 3, 4, 5] = [0.95, 0.854, 0.752, 0.642], gen_NLL = 2.1054, self_bleu = [0.931],
+[ADV] epoch 480: g_loss: 13.9824, d_loss: 0.0052, BLEU-[2, 3, 4, 5] = [0.949, 0.859, 0.764, 0.635], gen_NLL = 2.3108, self_bleu = [0.944],
+[ADV] epoch 500: g_loss: 14.4493, d_loss: 0.0058, BLEU-[2, 3, 4, 5] = [0.961, 0.879, 0.798, 0.682], gen_NLL = 2.4671, self_bleu = [0.948],
+[ADV] epoch 520: g_loss: 14.5056, d_loss: 0.0037, BLEU-[2, 3, 4, 5] = [0.966, 0.895, 0.825, 0.695], gen_NLL = 2.6324, self_bleu = [0.945],
+[ADV] epoch 540: g_loss: 15.6583, d_loss: 0.0061, BLEU-[2, 3, 4, 5] = [0.996, 0.984, 0.965, 0.638], gen_NLL = 2.8159, self_bleu = [0.989],
+[ADV] epoch 560: g_loss: 16.9920, d_loss: 0.0003, BLEU-[2, 3, 4, 5] = [0.994, 0.99, 0.986, 0.624], gen_NLL = 2.9631, self_bleu = [0.994],
+[ADV] epoch 580: g_loss: 18.6280, d_loss: 0.0003, BLEU-[2, 3, 4, 5] = [0.999, 0.994, 0.989, 0.63], gen_NLL = 3.0363, self_bleu = [0.992],
+[ADV] epoch 600: g_loss: 19.2514, d_loss: 0.0004, BLEU-[2, 3, 4, 5] = [1.0, 0.999, 0.998, 0.631], gen_NLL = 3.0826, self_bleu = [0.996],
+[ADV] epoch 620: g_loss: 19.0490, d_loss: 0.0004, BLEU-[2, 3, 4, 5] = [0.999, 0.998, 0.995, 0.627], gen_NLL = 3.1393, self_bleu = [0.996],
+[ADV] epoch 640: g_loss: 20.8905, d_loss: 0.0003, BLEU-[2, 3, 4, 5] = [0.999, 0.998, 0.998, 0.633], gen_NLL = 3.2001, self_bleu = [0.997],
+[ADV] epoch 660: g_loss: 20.2527, d_loss: 0.0002, BLEU-[2, 3, 4, 5] = [0.995, 0.992, 0.989, 0.624], gen_NLL = 3.2742, self_bleu = [0.996],
+[ADV] epoch 680: g_loss: 21.4818, d_loss: 0.0001, BLEU-[2, 3, 4, 5] = [0.999, 0.997, 0.994, 0.629], gen_NLL = 3.3409, self_bleu = [0.996],
+[ADV] epoch 700: g_loss: 19.9643, d_loss: 0.0001, BLEU-[2, 3, 4, 5] = [1.0, 0.999, 0.997, 0.631], gen_NLL = 3.3996, self_bleu = [0.998],
+[ADV] epoch 720: g_loss: 19.7122, d_loss: 0.0002, BLEU-[2, 3, 4, 5] = [1.0, 1.0, 1.0, 0.633], gen_NLL = 3.4688, self_bleu = [0.996],
+[ADV] epoch 740: g_loss: 20.4941, d_loss: 0.0000, BLEU-[2, 3, 4, 5] = [1.0, 1.0, 1.0, 0.634], gen_NLL = 3.5364, self_bleu = [0.995],
+[ADV] epoch 760: g_loss: 19.4791, d_loss: 0.0001, BLEU-[2, 3, 4, 5] = [0.999, 0.999, 0.998, 0.63], gen_NLL = 3.6049, self_bleu = [0.997],
+[ADV] epoch 780: g_loss: 19.2268, d_loss: 0.0001, BLEU-[2, 3, 4, 5] = [1.0, 1.0, 1.0, 0.634], gen_NLL = 3.6725, self_bleu = [0.998],
+[ADV] epoch 800: g_loss: 20.9131, d_loss: 0.0000, BLEU-[2, 3, 4, 5] = [1.0, 0.999, 0.997, 0.633], gen_NLL = 3.7406, self_bleu = [1.0],
+[ADV] epoch 820: g_loss: 21.2837, d_loss: 0.0011, BLEU-[2, 3, 4, 5] = [1.0, 0.999, 0.997, 0.628], gen_NLL = 3.8037, self_bleu = [0.996],
+[ADV] epoch 840: g_loss: 21.0297, d_loss: 0.0001, BLEU-[2, 3, 4, 5] = [0.996, 0.995, 0.994, 0.629], gen_NLL = 3.8759, self_bleu = [0.992],
+[ADV] epoch 860: g_loss: 20.2257, d_loss: 0.0001, BLEU-[2, 3, 4, 5] = [1.0, 0.999, 0.999, 0.631], gen_NLL = 3.9485, self_bleu = [0.999],
+[ADV] epoch 880: g_loss: 20.5352, d_loss: 0.0001, BLEU-[2, 3, 4, 5] = [1.0, 1.0, 0.998, 0.629], gen_NLL = 4.0300, self_bleu = [1.0],
+[ADV] epoch 900: g_loss: 22.1554, d_loss: 0.0003, BLEU-[2, 3, 4, 5] = [0.998, 0.996, 0.994, 0.628], gen_NLL = 4.1109, self_bleu = [0.994],
+[ADV] epoch 920: g_loss: 20.5250, d_loss: 0.0002, BLEU-[2, 3, 4, 5] = [0.997, 0.996, 0.996, 0.629], gen_NLL = 4.1891, self_bleu = [1.0],
+[ADV] epoch 940: g_loss: 18.8978, d_loss: 0.0010, BLEU-[2, 3, 4, 5] = [1.0, 1.0, 1.0, 0.631], gen_NLL = 4.2685, self_bleu = [1.0],
+[ADV] epoch 960: g_loss: 17.9222, d_loss: 0.0008, BLEU-[2, 3, 4, 5] = [0.999, 0.998, 0.997, 0.629], gen_NLL = 4.3385, self_bleu = [1.0],
+[ADV] epoch 980: g_loss: 19.0219, d_loss: 0.0062, BLEU-[2, 3, 4, 5] = [1.0, 0.999, 0.998, 0.629], gen_NLL = 4.4047, self_bleu = [1.0],
+[ADV] epoch 1000: g_loss: 19.3136, d_loss: 0.0000, BLEU-[2, 3, 4, 5] = [1.0, 0.999, 0.998, 0.635], gen_NLL = 4.4786, self_bleu = [1.0],
+[ADV] epoch 1020: g_loss: 19.1112, d_loss: 0.0001, BLEU-[2, 3, 4, 5] = [1.0, 0.998, 0.997, 0.629], gen_NLL = 4.5534, self_bleu = [0.999],
+[ADV] epoch 1040: g_loss: 19.8247, d_loss: 0.0018, BLEU-[2, 3, 4, 5] = [1.0, 0.999, 0.999, 0.644], gen_NLL = 4.6073, self_bleu = [1.0],
+[ADV] epoch 1060: g_loss: 20.4732, d_loss: 0.0001, BLEU-[2, 3, 4, 5] = [0.996, 0.994, 0.992, 0.634], gen_NLL = 4.6479, self_bleu = [1.0],
+[ADV] epoch 1080: g_loss: 17.1941, d_loss: 0.0020, BLEU-[2, 3, 4, 5] = [1.0, 0.996, 0.993, 0.683], gen_NLL = 4.6423, self_bleu = [0.997],
+[ADV] epoch 1100: g_loss: 16.8673, d_loss: 0.0262, BLEU-[2, 3, 4, 5] = [0.974, 0.951, 0.928, 0.8], gen_NLL = 4.6171, self_bleu = [0.994],
+[ADV] epoch 1120: g_loss: 13.9119, d_loss: 0.0014, BLEU-[2, 3, 4, 5] = [0.996, 0.992, 0.987, 0.906], gen_NLL = 4.5707, self_bleu = [0.991],
