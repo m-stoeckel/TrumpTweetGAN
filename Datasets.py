@@ -39,8 +39,9 @@ ALL_ACCOUNTS = (
 # TODO: Make Iterable Over Persons (other than trump)?
 class TweetDataset(Dataset):
     def __init__(self, save_dir=None, download=True, years=range(2009, 2020), account='realdonaldtrump',
-                 remove_retweets=True, remove_replies=True, remove_chaintweets=True, remove_masked_only=True,
-                 remove_dot_replies=False, mask_handles=True, mask_hashtags=True, mask_urls=True, to_lower=False):
+                 remove_retweets=True, remove_replies=True, remove_threads=True, remove_masked_only=True,
+                 remove_dot_replies=False, mask_handles=True, mask_hashtags=True, mask_urls=True, to_lower=False,
+                 min_length=-1):
         super(TweetDataset, self).__init__()
         if account not in ALL_ACCOUNTS:
             raise ValueError(f'"{account}" is not a valid account name:\n{ALL_ACCOUNTS}')
@@ -92,7 +93,7 @@ class TweetDataset(Dataset):
             self.tweets = list(
                 filter(lambda tw: not tw.get('in_reply_to_user_id_str', None),
                        self.tweets))
-        if remove_chaintweets:
+        if remove_threads:
             self.tweets = list(
                 filter(lambda tw: not (tw.get('text', "").endswith("..") or tw.get('text', "").startswith("..")),
                        self.tweets))
@@ -101,20 +102,26 @@ class TweetDataset(Dataset):
                 filter(lambda tw: dot_reply_regex.fullmatch(tw.get('text', "")) is None,
                        self.tweets)
             )
-        self.tweets = list(
-            map(self.get_text, self.tweets)
-        )
+
+        # Pre-process text
+        self.tweets = list(map(self.pre_process, self.tweets))
+
         if remove_masked_only:
             self.tweets = list(
                 filter(lambda tw: masked_only_regex.fullmatch(tw) is None,
                        self.tweets))
+        if min_length > 0:
+            self.tweets = list(
+                filter(lambda tw: len(tw.split()) >= min_length,
+                       self.tweets)
+            )
 
         print(f'{account}: {len(self.tweets)} clean tweets')
 
     def __getitem__(self, item):
         return self.tweets[item]
 
-    def get_text(self, tweet):
+    def pre_process(self, tweet):
         text: str = tweet.get('text', "")
         # unescape HTML content
         text = html.unescape(text)
@@ -153,8 +160,9 @@ class TweetDataset(Dataset):
         np.random.shuffle(self.tweets)
 
 
+min_length = 20
 for year in (2009, 2015, 2016):
-    data = TweetDataset(download=True, years=range(year, 2020))
+    data = TweetDataset(download=True, years=range(year, 2020), min_length=min_length)
     np.random.seed(2020)
     data.shuffle()
     prefix = f'trump_tweets_{year}-2019'
@@ -169,7 +177,6 @@ for year in (2009, 2015, 2016):
         for i in trange(train_sample, len(data)):
             entry = data[i]
             test.write(entry + "\n")
-            # vocabulary |= set(entry.strip().split())
         print('', flush=True, end='')
         print(f'{year}-2019 train vocabulary size: {len(vocabulary)}', flush=True)
         print(f'{year}-2019 train vocabulary[:100]: {list(vocabulary)[:100]}', flush=True)
@@ -179,7 +186,7 @@ accs.remove('realdonaldtrump')
 for year in (2009, 2015, 2016):
     datasets: List[TweetDataset] = []
     for acc in sorted(accs):
-        dataset = TweetDataset(download=True, years=range(year, 2020), account=acc)
+        dataset = TweetDataset(download=True, years=range(year, 2020), account=acc, min_length=min_length)
         np.random.seed(2020)
         dataset.shuffle()
         datasets.append(dataset)
@@ -197,7 +204,6 @@ for year in (2009, 2015, 2016):
         for i in trange(train_sample, len(data)):
             entry = data[i]
             test.write(entry + "\n")
-            # vocabulary |= set(entry.strip().split())
         print('', flush=True, end='')
         print(f'{year}-2019 train vocabulary size: {len(vocabulary)}', flush=True)
         print(f'{year}-2019 train vocabulary[:100]: {list(vocabulary)[:100]}', flush=True)
