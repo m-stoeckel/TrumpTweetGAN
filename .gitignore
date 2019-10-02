@@ -1,8 +1,7 @@
 # Custom
 log/
-dataset/
 pretrain/
-save/
+TextGAN-Pytorch/save/
 savefig/
 .idea/
 
