@@ -4,24 +4,22 @@ import os
 import re
 from typing import List
 from urllib import request
-import matplotlib.pyplot as plt
 
+import matplotlib.pyplot as plt
 import numpy as np
 from torch.utils.data.dataset import Dataset, ConcatDataset
 from tqdm import trange
 
+# Regular expressions for the dataset construction
 handle_regex = re.compile(r'(@\w{1,15})')
 hashtag_regex = re.compile(r'(#[\w_\d]+)')
 dot_reply_regex = re.compile(r'^\s*\.\s*@\w{1,15}.*')
-url_regex = re.compile(
-    # r'((?:(?:https?|ftp)://)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\x{00a1}-\x{ffff}0-9]+-?)*[a-z\x{00a1}-\x{ffff}0-9]+)(?:\.(?:[a-z\x{00a1}-\x{ffff}0-9]+-?)*[a-z\x{00a1}-\x{ffff}0-9]+)*(?:\.(?:[a-z\x{00a1}-\x{ffff}]{2,})))(?::\d{2,5})?(?:/[^\s]*)?)'
-    r'((?:http[s]?|www)\S+)'
-)
-masked_only_regex = re.compile(
-    r'^\s*(?:\s?\[[^]]+\]\s?)*\s*$'
-)
+url_regex = re.compile(r'((?:http[s]?|www)\S+)')
+masked_only_regex = re.compile(r'^\s*(?:\s?\[[^]]+\]\s?)*\s*$')
 clean_regex = re.compile(r'[^\w\-_!?:.,;()\d\'"\s#@]')
 
+# List of all accounts available on http://trumptwitterarchive.com/
+# File example (url): http://trumptwitterarchive.com/data/realdonaldtrump/2019.json
 ALL_ACCOUNTS = (
     'ajitpaifcc', 'andypuzder', 'scaramucci', 'realbencarson', 'citizens_united', 'clewandowski_', 'sendancoats',
     'danscavino', 'darrellissa', 'sheriffclarke', 'david_bossie', 'realdonaldtrump', 'donaldjtrumpjr', 'potus',
@@ -35,14 +33,31 @@ ALL_ACCOUNTS = (
 )
 
 
-# File example (url): http://trumptwitterarchive.com/data/realdonaldtrump/2019.json
-
-# TODO: Make Iterable Over Persons (other than trump)?
 class TweetDataset(Dataset):
     def __init__(self, save_dir=None, download=True, years=range(2009, 2020), account='realdonaldtrump',
                  remove_retweets=True, remove_replies=True, remove_threads=True, remove_dot_replies=False,
                  mask_handles=True, mask_hashtags=True, mask_urls=True, remove_masked_only=True, to_lower=False,
                  min_length=-1, min_count=-1, plot_tf=False):
+        """
+        PyTorch dataset class for tweets from the Trump Twitter Archive (TTA).
+
+        :param save_dir: Download path for the account's JSON files.
+        :param download: If true, attempt to download the tweets from TTA. Existing files will not be replaced.
+        :param years: The years to download tweets from. Usually from [2009, current year].
+        :param account: The account name.
+        :param remove_retweets: If True, remove tweets marked as 'is_retweet'.
+        :param remove_replies: If True, remove tweets marked as 'is_reply'.
+        :param remove_threads: If True, remove tweets starting or ending with '..'.
+        :param remove_dot_replies: If True, remove dot replies.
+        :param mask_handles: If True, mask all twitter handles with [HANDLE].
+        :param mask_hashtags: If True, mask all hashtags with [HASHTAG].
+        :param mask_urls: If True, mask all URLs with [URL].
+        :param remove_masked_only: If True, remove all tweets that only contain masked tokens.
+        :param to_lower: If True, convert tweets to lower case.
+        :param min_length: Remove all tweets not at least this long. Set to -1 to disable.
+        :param min_count: Remove all tokens that do not occur at least this often. Set to -1 to disable.
+        :param plot_tf: Plot the log-term-frequency-term-rank graph.
+        """
         super(TweetDataset, self).__init__()
         if account not in ALL_ACCOUNTS:
             raise ValueError(f'"{account}" is not a valid account name:\n{ALL_ACCOUNTS}')
@@ -55,7 +70,6 @@ class TweetDataset(Dataset):
         self.vocabulary = None
 
         file_list = []
-
         for year in years:
             file_list.append(str(year) + ".json")
 
@@ -103,10 +117,9 @@ class TweetDataset(Dataset):
         if remove_dot_replies:
             self.tweets = list(
                 filter(lambda tw: dot_reply_regex.fullmatch(tw.get('text', "")) is None,
-                       self.tweets)
-            )
+                       self.tweets))
 
-        # Pre-process text
+        # Pre-process raw tweets to tokenized text
         self.tweets = list(map(self.pre_process, self.tweets))
 
         if remove_masked_only:
@@ -116,8 +129,7 @@ class TweetDataset(Dataset):
         if min_length > 0:
             self.tweets = list(
                 filter(lambda tw: len(tw.split()) >= min_length,
-                       self.tweets)
-            )
+                       self.tweets))
         if self.min_count > 0:
             flat = np.array([item for sublist in map(lambda tw: tw.split(), self.tweets) for item in sublist])
             uniques, counts = np.unique(flat, return_counts=True)
@@ -127,9 +139,7 @@ class TweetDataset(Dataset):
                 filter(lambda tw: len(tw) > 0,
                        map(lambda text: " ".join(filter(
                            lambda t: t in self.vocabulary, text.split())),
-                           self.tweets)
-                       )
-            )
+                           self.tweets)))
 
             if plot_tf:
                 plt.title("Word Frequencies in @" + account)
@@ -159,6 +169,18 @@ class TweetDataset(Dataset):
         print(f'{account}: {len(self.tweets)} clean tweets')
 
     def pre_process(self, tweet):
+        """
+        Pre-process the raw tweet by:
+         - unescaping HTML elements,
+         - stripping leading and trailing quotes,
+         - replacing all whitespaces with simple spaces,
+         - removing any non-text characters,
+         - applying masking as given by the constructors' parameters,
+         - and finally tokenizing the resulting text.,
+
+        :param tweet: The raw input tweet.
+        :return: The tokenized plain text tweet.
+        """
         text: str = tweet.get('text', "")
         # unescape HTML content
         text = html.unescape(text)
@@ -188,9 +210,17 @@ class TweetDataset(Dataset):
 
     @staticmethod
     def tokenize(text):
+        """
+        Tokenizing method for the Trump tweet dataset.
+        Splits tokens on all non-alphanumeric characters with the exception of this class: r'[\\\\]\\\\[\\\\w@#\\\\-]'.
+
+        :param text: input
+        :return: The tokenized text, separated by single whitespaces
+        """
         return " ".join(re.split(r'([^\]\[\w@#\-]+|[\-]{2,})', text))
 
     def shuffle(self):
+        """Call to np.random.shuffle on the tweet list."""
         np.random.shuffle(self.tweets)
 
     def __getitem__(self, item):
@@ -202,7 +232,7 @@ class TweetDataset(Dataset):
 
 min_length = 20
 for year in (2009, 2015, 2016):
-    data = TweetDataset(download=True, years=range(year, 2020), min_length=min_length, min_count=50)
+    data = TweetDataset(download=True, years=range(year, 2020), min_length=min_length, min_count=-1)
     np.random.seed(2020)
     data.shuffle()
     prefix = f'trump_tweets_{year}-2019'
