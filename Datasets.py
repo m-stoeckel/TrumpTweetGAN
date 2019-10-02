@@ -4,6 +4,7 @@ import os
 import re
 from typing import List
 from urllib import request
+import matplotlib.pyplot as plt
 
 import numpy as np
 from torch.utils.data.dataset import Dataset, ConcatDataset
@@ -39,9 +40,9 @@ ALL_ACCOUNTS = (
 # TODO: Make Iterable Over Persons (other than trump)?
 class TweetDataset(Dataset):
     def __init__(self, save_dir=None, download=True, years=range(2009, 2020), account='realdonaldtrump',
-                 remove_retweets=True, remove_replies=True, remove_threads=True, remove_masked_only=True,
-                 remove_dot_replies=False, mask_handles=True, mask_hashtags=True, mask_urls=True, to_lower=False,
-                 min_length=-1):
+                 remove_retweets=True, remove_replies=True, remove_threads=True, remove_dot_replies=False,
+                 mask_handles=True, mask_hashtags=True, mask_urls=True, remove_masked_only=True, to_lower=False,
+                 min_length=-1, min_count=-1, plot_tf=False):
         super(TweetDataset, self).__init__()
         if account not in ALL_ACCOUNTS:
             raise ValueError(f'"{account}" is not a valid account name:\n{ALL_ACCOUNTS}')
@@ -50,6 +51,8 @@ class TweetDataset(Dataset):
         self.mask_hashtags = mask_hashtags
         self.mask_urls = mask_urls
         self.to_lower = to_lower
+        self.min_count = min_count
+        self.vocabulary = None
 
         file_list = []
 
@@ -115,11 +118,45 @@ class TweetDataset(Dataset):
                 filter(lambda tw: len(tw.split()) >= min_length,
                        self.tweets)
             )
+        if self.min_count > 0:
+            flat = np.array([item for sublist in map(lambda tw: tw.split(), self.tweets) for item in sublist])
+            uniques, counts = np.unique(flat, return_counts=True)
+            mp = {tk: ct for tk, ct in zip(uniques, counts)}
+            self.vocabulary = {token for token, _ in filter(lambda tp: tp[1] >= self.min_count, zip(uniques, counts))}
+            self.tweets = list(
+                filter(lambda tw: len(tw) > 0,
+                       map(lambda text: " ".join(filter(
+                           lambda t: t in self.vocabulary, text.split())),
+                           self.tweets)
+                       )
+            )
+
+            if plot_tf:
+                plt.title("Word Frequencies in @" + account)
+                plt.ylabel("Total Number of Occurrences")
+                plt.xlabel("Rank of word")
+                plt.yscale('log')
+                plt.plot(list(range(len(uniques))), list(sorted(counts, reverse=True)))
+                plt.plot(list(range(len(self.vocabulary))),
+                         list(sorted({your_key: mp[your_key] for your_key in self.vocabulary}.values(), reverse=True)))
+                plt.show()
+
+                plt.title("Word Frequencies in @" + account)
+                plt.ylabel("Total Number of Occurrences")
+                plt.xlabel("Rank of word")
+                plt.loglog(
+                    list(range(len(uniques))),
+                    list(sorted(counts, reverse=True)),
+                    basex=10
+                )
+                plt.loglog(
+                    list(range(len(self.vocabulary))),
+                    list(sorted({your_key: mp[your_key] for your_key in self.vocabulary}.values(), reverse=True)),
+                    basex=10
+                )
+                plt.show()
 
         print(f'{account}: {len(self.tweets)} clean tweets')
-
-    def __getitem__(self, item):
-        return self.tweets[item]
 
     def pre_process(self, tweet):
         text: str = tweet.get('text', "")
@@ -153,16 +190,19 @@ class TweetDataset(Dataset):
     def tokenize(text):
         return " ".join(re.split(r'([^\]\[\w@#\-]+|[\-]{2,})', text))
 
-    def __len__(self):
-        return len(self.tweets)
-
     def shuffle(self):
         np.random.shuffle(self.tweets)
+
+    def __getitem__(self, item):
+        return self.tweets[item]
+
+    def __len__(self):
+        return len(self.tweets)
 
 
 min_length = 20
 for year in (2009, 2015, 2016):
-    data = TweetDataset(download=True, years=range(year, 2020), min_length=min_length)
+    data = TweetDataset(download=True, years=range(year, 2020), min_length=min_length, min_count=50)
     np.random.seed(2020)
     data.shuffle()
     prefix = f'trump_tweets_{year}-2019'
